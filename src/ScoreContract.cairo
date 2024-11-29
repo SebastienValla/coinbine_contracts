@@ -1,9 +1,12 @@
+use core::starknet::ContractAddress;
+
 #[starknet::interface]
 trait IScoreContract<TContractState> {
     fn setScore(ref self: TContractState, id: felt252, value: u256);
     fn getScore(self: @TContractState, id: felt252) -> u256;
     fn setCheater(ref self: TContractState, id: felt252, isCheater: bool);
     fn getCheater(self: @TContractState, id: felt252) -> bool;
+    fn getOwner(self: @TContractState) -> ContractAddress;
 }
 
 #[starknet::contract]
@@ -41,6 +44,10 @@ mod ScoreContract {
             self.id_to_value.entry(id).read()
         }
 
+        fn getOwner(self: @ContractState) -> ContractAddress {
+            self.admin.read()
+        }
+
         fn setCheater(ref self: ContractState, id: felt252, isCheater: bool) {
             let caller_address = get_caller_address();
             let admin_address = self.admin.read();
@@ -49,6 +56,15 @@ mod ScoreContract {
         }
         fn getCheater(self: @ContractState, id: felt252) -> bool{
             self.id_to_bool.entry(id).read()
+        }
+    }
+
+    #[generate_trait]
+    pub impl InternalImpl of InternalTrait {
+        fn setOwner(ref self: ContractState, newOwner: ContractAddress) {
+            let caller: ContractAddress = get_caller_address();
+            assert!(caller == self.getOwner(), "Only the owner can set ownership");
+            self.admin.write(newOwner);
         }
     }
 }
