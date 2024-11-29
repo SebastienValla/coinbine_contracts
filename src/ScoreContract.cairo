@@ -14,11 +14,15 @@ mod ScoreContract {
     struct Storage {
         id_to_value: Map<felt252, u256>,
     }
+
     #[abi(embed_v0)]
     impl ScoreContractImpl of super::IScoreContract<ContractState> {
   
         fn setScore(ref self: ContractState, id: felt252, value: u256) {
-            self.id_to_value.entry(id).write(value);
+  
+            let current_score = self.id_to_value.entry(id).read();
+      
+            self.id_to_value.entry(id).write(current_score + value);
         }
        
         fn getScore(self: @ContractState, id: felt252) -> u256 {
