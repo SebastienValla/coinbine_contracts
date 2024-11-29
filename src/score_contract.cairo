@@ -26,10 +26,9 @@ mod ScoreContract {
 
     #[constructor]
     fn constructor(
-        ref self: ContractState
+        ref self: ContractState, admin : ContractAddress
     ) {
-        let caller_address = get_caller_address();
-        self.admin.write(caller_address);
+        self.admin.write(admin);
     }
 
     #[abi(embed_v0)]
