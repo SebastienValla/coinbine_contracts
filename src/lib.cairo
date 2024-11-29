@@ -1,1 +1,1 @@
-pub mod ScoreContract;
+pub mod score_contract;
