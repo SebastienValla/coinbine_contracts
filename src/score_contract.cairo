@@ -2,8 +2,8 @@ use core::starknet::ContractAddress;
 
 #[starknet::interface]
 trait IScoreContract<TContractState> {
-    fn setScore(ref self: TContractState, id: felt252, value: u256);
-    fn getScore(self: @TContractState, id: felt252) -> u256;
+    fn setScore(ref self: TContractState, id: felt252, value: u128);
+    fn getScore(self: @TContractState, id: felt252) -> u128;
     fn setCheater(ref self: TContractState, id: felt252, isCheater: bool);
     fn getCheater(self: @TContractState, id: felt252) -> bool;
     fn getOwner(self: @TContractState) -> ContractAddress;
@@ -19,7 +19,7 @@ mod ScoreContract {
 
     #[storage]
     struct Storage {
-        id_to_value: Map<felt252, u256>,
+        id_to_value: Map<felt252, u128>,
         id_to_bool: Map<felt252, bool>,
         admin: ContractAddress,
     }
@@ -34,12 +34,12 @@ mod ScoreContract {
     #[abi(embed_v0)]
     impl ScoreContractImpl of super::IScoreContract<ContractState> {
   
-        fn setScore(ref self: ContractState, id: felt252, value: u256) {  
+        fn setScore(ref self: ContractState, id: felt252, value: u128) {  
             let current_score = self.id_to_value.entry(id).read();
             self.id_to_value.entry(id).write(current_score + value)
         }
        
-        fn getScore(self: @ContractState, id: felt252) -> u256 {
+        fn getScore(self: @ContractState, id: felt252) -> u128 {
             self.id_to_value.entry(id).read()
         }
 
